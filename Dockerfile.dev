@@ -1,0 +1,11 @@
+FROM node:12-slim
+
+RUN npm i -g nodemon
+
+WORKDIR /home/node
+COPY . .
+RUN npm install
+
+HEALTHCHECK --retries=2 --interval=10s --timeout=5s --start-period=5s CMD node node_modules/@5app/health-check-helpers/bin/check.js
+
+CMD ["nodemon", "index.js"]

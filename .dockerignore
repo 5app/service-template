@@ -1,0 +1,3 @@
+.git
+test
+#node_modules # Not adding node_modules to the list of ignored files as we will copy them from CircleCI when creating the image (not ideal, but much faster then running `npm ci --only=prod`)

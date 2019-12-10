@@ -1,0 +1,23 @@
+version: '2.1'
+
+services:
+  redis:
+    image: redis:2.8.19
+    logging:
+      driver: none
+
+  tests:
+    build:
+      context: ../..
+      dockerfile: ./test/integration/Dockerfile
+    command: npx mocha --watch test/integration/**/*.spec.js
+    volumes:
+      - ../../:/home/node           # Code to be tested
+      - /home/node/node_modules/    # This is needed to avoid resetting the node modules installed inside the container
+    depends_on:
+      redis:
+        condition: service_started
+    environment:
+      REDIS_HOST: redis
+      LOGS_LEVEL: warn
+

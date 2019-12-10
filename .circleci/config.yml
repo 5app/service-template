@@ -1,0 +1,143 @@
+version: 2.1
+
+# orbs:
+  # clair: ovotech/clair-scanner@1 # third party orb that needs to be approved in CircleCI's settings
+
+aliases:
+  - &dir ~/repo
+  - &defaults
+    working_directory: *dir
+    docker:
+      - image: circleci/node:12
+  - &cache_key
+    key: dependency-cache-{{ checksum "package.json" }}
+  - &attach_workspace
+    attach_workspace:
+       at: *dir
+  - &create_env_var_script
+    name: Create a script to set environmental variables
+    command: |
+      cat \<<EoScript >/tmp/vars.sh
+      shopt -s extglob
+      export service_name="myservice"
+      short_sha=${CIRCLE_SHA1:0:7}
+      export registry_base="\${REGISTRY_BASE:-5app/}"
+      export container_tag="\${CIRCLE_TAG:-\$short_sha}"
+      export container_name="\${registry_base}\${service_name}:\${container_tag}"
+      export container_latest="\${registry_base}\${service_name}:latest"
+      EoScript
+  - &login_to_docker
+    name: Log in to Docker hub
+    command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+jobs:
+  checkout_code:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache: 
+          <<: *cache_key
+      - run: npm install
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ./node_modules
+      - persist_to_workspace:
+          root: *dir
+          paths:
+            - .
+
+  audit:
+    <<: *defaults
+    steps:
+      - *attach_workspace
+      - run: npm audit
+
+  unit_tests:
+    <<: *defaults
+    steps:
+      - *attach_workspace
+      - run: npm run lint
+      - run: npm test
+
+  integration_tests:
+    working_directory: *dir
+    docker:
+      - image: circleci/node:12
+        environment:
+          REDIS_HOST: 127.0.0.1
+          LOGS_LEVEL: warn
+      - image: redis:2.8.19
+    steps:
+      - *attach_workspace
+      - run: cd test/integration && npx mocha **/*.spec.js
+  
+  build_container:
+    <<: *defaults
+    steps:
+      - *attach_workspace
+      - setup_remote_docker
+      - run: *login_to_docker
+      - run: *create_env_var_script
+      - run:
+          name: Build container for the service
+          command: |
+            . /tmp/vars.sh
+            docker build -q --build-arg "TAG=$container_tag" --build-arg NODE_ENV=production -t $container_name . 
+            docker push $container_name
+
+  tag_latest:
+    <<: *defaults
+    steps:
+      - setup_remote_docker
+      - run: *login_to_docker
+      - run: *create_env_var_script
+      - run:
+          name: Tag containers as latest
+          command: |
+            . /tmp/vars.sh
+            docker pull $container_name
+            docker tag $container_name $container_latest
+            docker push $container_latest
+
+  # scan_image_with_clair:
+  #   executor: clair/default
+  #   steps:
+  #     - run: *login_to_docker
+  #     - run: |
+  #         docker pull $container_name
+  #         echo $(docker image inspect --format="{{index .RepoDigests 0}}" $container_name) > /image.txt
+  #     - clair/scan:
+  #         image_file: /image.txt
+  #         severity_threshold: Critical
+
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - checkout_code
+      - audit:
+          requires:
+            - checkout_code
+      - unit_tests:
+          requires:
+            - checkout_code
+      - integration_tests:
+          requires:
+            - checkout_code
+      - build_container:
+          context: docker-push
+          requires:
+              - unit_tests
+              - integration_tests
+      # - scan_image_with_clair:
+      #     requires:
+      #         - build_container
+      - tag_latest:
+            context: docker-push
+            requires:
+                - build_container
+            filters:
+                branches:
+                    only: master

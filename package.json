@@ -1,0 +1,59 @@
+{
+  "name": "@5app/myservice",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TODO: Short description",
+  "scripts": {
+    "lint": "eslint ./",
+    "lint-fix": "npm run lint -- --fix",
+    "test": "mocha test/unit/**/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/5app/myservice.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/5app/myservice/issues"
+  },
+  "homepage": "https://github.com/5app/myservice#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "eslint": "^6.7.2",
+    "eslint-config-5app": "^0.8.0",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
+    "mocha": "^6.2.2",
+    "sinon": "^7.5.0"
+  },
+  "lint-staged": {
+    "*.js": "eslint"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "subject-case": [
+        2,
+        "never",
+        [
+          "start-case",
+          "pascal-case"
+        ]
+      ]
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E  HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "dependencies": {
+    "@5app/health-check-helpers": "^1.2.0",
+    "@5app/logger": "^2.0.0",
+    "bull": "^3.12.1"
+  }
+}

@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    redis:
+        image: redis:2.8.19
+
+    myservice:
+        build:
+            context: ./
+            dockerfile: Dockerfile.dev
+        restart: always
+        environment:
+            REDIS_HOST: redis
+            # LOGS_LEVEL: warn
+        volumes:
+            - ./:/home/node
+        # networks:
+        #     - dashboard_default
+
+# networks:
+#     dashboard_default:
+#         external: true
