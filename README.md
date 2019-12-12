@@ -7,6 +7,8 @@
 
 # myservice
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/5app/service-template.svg)](https://greenkeeper.io/)
+
 > TODO: Add a very short description of the microservice 
 
 ## Introduction
