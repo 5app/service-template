@@ -126,18 +126,18 @@ workflows:
       - integration_tests:
           requires:
             - checkout_code
-      - build_container:
-          context: docker-push
-          requires:
-              - unit_tests
-              - integration_tests
+      # - build_container:
+      #   context: docker-push
+      #    requires:
+      #        - unit_tests
+      #        - integration_tests
       # - scan_image_with_clair:
       #     requires:
       #         - build_container
-      - tag_latest:
-            context: docker-push
-            requires:
-                - build_container
-            filters:
-                branches:
-                    only: master
+      # - tag_latest:
+      #      context: docker-push
+      #      requires:
+      #          - build_container
+      #      filters:
+      #          branches:
+      #              only: master
