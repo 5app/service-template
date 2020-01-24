@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/5app/service-template.git"
+    "url": "git+https://github.com/5app/myservice.git"
   },
   "license": "ISC",
   "bugs": {
@@ -78,7 +78,12 @@
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
-      "@semantic-release/npm",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
       "@semantic-release/github"
     ]
   }
