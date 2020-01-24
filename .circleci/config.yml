@@ -99,6 +99,12 @@ jobs:
             docker pull $container_name
             docker tag $container_name $container_latest
             docker push $container_latest
+  release:
+    <<: *defaults
+    steps:
+      - *attach_workspace
+      - checkout
+      - run: npm run semantic-release
 
   # scan_image_with_clair:
   #   executor: clair/default
@@ -126,6 +132,10 @@ workflows:
       - integration_tests:
           requires:
             - checkout_code
+      - release:
+          requires:
+            - unit_tests
+            - integration_tests
       # - build_container:
       #   context: docker-push
       #    requires:
