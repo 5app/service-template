@@ -1,8 +1,5 @@
 version: 2.1
 
-# orbs:
-  # clair: ovotech/clair-scanner@1 # third party orb that needs to be approved in CircleCI's settings
-
 aliases:
   - &dir ~/repo
   - &defaults
@@ -100,16 +97,21 @@ jobs:
             docker tag $container_name $container_latest
             docker push $container_latest
 
-  # scan_image_with_clair:
-  #   executor: clair/default
-  #   steps:
-  #     - run: *login_to_docker
-  #     - run: |
-  #         docker pull $container_name
-  #         echo $(docker image inspect --format="{{index .RepoDigests 0}}" $container_name) > /image.txt
-  #     - clair/scan:
-  #         image_file: /image.txt
-  #         severity_threshold: Critical
+  scan_image_with_clair:
+    working_directory: *dir
+    docker:
+      - image: 5app/buildenv:latest
+    steps:
+      - *attach_workspace
+      - setup_remote_docker
+      - run: *login_to_docker
+      - run: *create_env_var_script
+      - run:
+          name: Scan with Clair
+          command: |
+            . /tmp/vars.sh
+            docker pull $container_name
+            IMAGE_TO_SCAN=$container_name FAILURE_VULNERABILITY_LEVEL="Critical" scan_container
 
 
 workflows:
@@ -131,9 +133,9 @@ workflows:
           requires:
               - unit_tests
               - integration_tests
-      # - scan_image_with_clair:
-      #     requires:
-      #         - build_container
+      - scan_image_with_clair:
+          requires:
+              - build_container
       - tag_latest:
             context: docker-push
             requires:
