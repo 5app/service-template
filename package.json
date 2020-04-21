@@ -21,14 +21,14 @@
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
-    "@semantic-release/changelog": "^3.0.6",
-    "@semantic-release/git": "^8.0.0",
+    "@semantic-release/changelog": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
     "eslint": "^6.8.0",
     "eslint-config-5app": "^0.8.6",
     "husky": "^4.2.5",
     "lint-staged": "^10.1.6",
     "mocha": "^7.1.1",
-    "semantic-release": "^16.0.4",
+    "semantic-release": "^17.0.0",
     "sinon": "^9.0.0"
   },
   "lint-staged": {
