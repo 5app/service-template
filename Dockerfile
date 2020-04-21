@@ -1,10 +1,10 @@
-FROM node:12-slim AS builder
+FROM node:12-alpine AS builder
 WORKDIR /home/node
 COPY . .
 RUN npm install --production && npm prune --production # Copy cached modules in CircleCI but only keep production dependencies in the container
 
 
-FROM node:12-slim
+FROM node:12-alpine
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
 ARG TAG
