@@ -1,4 +1,4 @@
-'use strict';
+
 
 const Bull = require('bull');
 const logger = require('@5app/logger');

@@ -1,4 +1,4 @@
-'use strict';
+
 
 const sinon = require('sinon');
 const getJobFromQueue = require('./helpers/getJobFromQueue');
