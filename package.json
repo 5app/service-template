@@ -28,7 +28,7 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.1.6",
     "mocha": "^7.1.1",
-    "semantic-release": "^17.0.0",
+    "semantic-release": "17.0.7",
     "sinon": "^9.0.0"
   },
   "lint-staged": {
