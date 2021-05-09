@@ -2,7 +2,7 @@ version: '3'
 
 services:
     redis:
-        image: redis:2.8.19
+        image: redis:2.8.23
 
     myservice:
         build:
