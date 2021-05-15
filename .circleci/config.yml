@@ -67,7 +67,7 @@ jobs:
         environment:
           REDIS_HOST: 127.0.0.1
           LOGS_LEVEL: warn
-      - image: redis:2.8.19
+      - image: redis:2.8.23
     steps:
       - *attach_workspace
       - run: cd test/integration && npx mocha **/*.spec.js
