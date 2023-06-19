@@ -8,7 +8,7 @@ aliases:
   - &defaults
     working_directory: *dir
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:17
   - &cache_key
     key: dependency-cache-{{ checksum "package.json" }}
   - &attach_workspace
@@ -63,7 +63,7 @@ jobs:
   integration_tests:
     working_directory: *dir
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:17
         environment:
           REDIS_HOST: 127.0.0.1
           LOGS_LEVEL: warn
